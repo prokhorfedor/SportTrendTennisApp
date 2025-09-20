@@ -10,4 +10,5 @@ public class CreateUserRequest
     public string Email { get; set; }
     [Phone]
     public string Phone { get; set; }
+    public string PasswordHash { get; set; }
 }

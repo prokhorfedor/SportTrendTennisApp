@@ -14,6 +14,9 @@ public class User
     public string LastName { get; set; }
     public string Email { get; set; }
     public string Phone { get; set; }
+    [Column(TypeName = "VARBINARY(250)")]
+    public byte[] PasswordHash { get; set; }
+    public byte[] PasswordSalt { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime CreatedDate { get; set; }
     public UserType UserType { get; set; }

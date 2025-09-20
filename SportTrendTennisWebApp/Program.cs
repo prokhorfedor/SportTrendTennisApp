@@ -21,7 +21,14 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+                policy.WithOrigins("http://localhost:5174")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
+        });
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -32,7 +39,7 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-
+        app.UseCors();
         app.UseAuthorization();
 
 

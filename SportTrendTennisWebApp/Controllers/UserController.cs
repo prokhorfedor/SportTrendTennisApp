@@ -7,12 +7,12 @@ namespace SportTrendTennisWebApp.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SignUpController : ControllerBase
+public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly ILogger<SignUpController> _logger;
+    private readonly ILogger<UserController> _logger;
 
-    public SignUpController(IUserService userService, ILogger<SignUpController> logger)
+    public UserController(IUserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
         _logger = logger;
@@ -26,6 +26,22 @@ public class SignUpController : ControllerBase
         {
             var user = await _userService.CreateUserAsync(request);
             return this.Ok(user);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    [HttpPost]
+    [Route("[action]")]
+    public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
+    {
+        try
+        {
+            var response = await _userService.LoginAsync(request);
+            return this.Ok(response);
         }
         catch (Exception e)
         {

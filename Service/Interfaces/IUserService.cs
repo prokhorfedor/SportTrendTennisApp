@@ -6,4 +6,5 @@ namespace Service.Interfaces;
 public interface IUserService
 {
     Task<CreateUserResponse> CreateUserAsync(CreateUserRequest request);
+    Task<LoginResponse> LoginAsync(LoginRequest request);
 }

@@ -10,9 +10,9 @@ namespace SportTrendTennisWebApp.Controllers;
 public class GroupManagementController : Controller
 {
     private readonly IGroupManagementService _groupManagementService;
-    private readonly ILogger<SignUpController> _logger;
+    private readonly ILogger<UserController> _logger;
 
-    public GroupManagementController(IGroupManagementService groupManagementService, ILogger<SignUpController> logger)
+    public GroupManagementController(IGroupManagementService groupManagementService, ILogger<UserController> logger)
     {
         _groupManagementService = groupManagementService;
         _logger = logger;

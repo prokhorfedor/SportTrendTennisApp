@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Login from "./Login";
 import {
     Box,
     Tabs,
@@ -47,7 +46,6 @@ export default function TennisRegistrationMUI() {
 
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedGroup, setSelectedGroup] = useState(null);
-    const [loggedIn, setLoggedIn] = useState(false);
 
     const handleChange = (event, newValue) => {
         setTabIndex(newValue);
@@ -61,60 +59,54 @@ export default function TennisRegistrationMUI() {
 
     return (
         <Box sx={{ maxWidth: 600, mx: "auto", p: 3 }}>
-            {!loggedIn ? (
-                <Login onLogin={() => setLoggedIn(true)} />
-            ) : (
-                <>
-                    <Typography variant="h4" align="center" gutterBottom>
-                        Реєстрація на групу з тенісу
-                    </Typography>
-                    {/* Tabs */}
-                    <Tabs
-                        value={tabIndex}
-                        onChange={handleChange}
-                        centered
-                        aria-label="тенісні групи"
-                    >
-                        {days.map((day, idx) => (
-                            <Tab key={day} label={day} />
-                        ))}
-                    </Tabs>
-                    {/* TabsContent */}
-                    {days.map((day, idx) => (
-                        <TabPanel key={day} value={tabIndex} index={idx}>
-                            {schedule[day].map((group) => (
-                                <Card key={group.id} sx={{ mb: 2, borderRadius: 2, boxShadow: 2 }}>
-                                    <CardContent
-                                        sx={{
-                                            display: "flex",
-                                            justifyContent: "space-between",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Box>
-                                            <Typography variant="subtitle1">{group.time}</Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {group.level}
-                                            </Typography>
-                                        </Box>
-                                        <Button
-                                            variant="contained"
-                                            onClick={() => handleRegister(group)}
-                                        >
-                                            Записатись
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </TabPanel>
+            <Typography variant="h4" align="center" gutterBottom>
+                Реєстрація на групу з тенісу
+            </Typography>
+            {/* Tabs */}
+            <Tabs
+                value={tabIndex}
+                onChange={handleChange}
+                centered
+                aria-label="тенісні групи"
+            >
+                {days.map((day, idx) => (
+                    <Tab key={day} label={day} />
+                ))}
+            </Tabs>
+            {/* TabsContent */}
+            {days.map((day, idx) => (
+                <TabPanel key={day} value={tabIndex} index={idx}>
+                    {schedule[day].map((group) => (
+                        <Card key={group.id} sx={{ mb: 2, borderRadius: 2, boxShadow: 2 }}>
+                            <CardContent
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Box>
+                                    <Typography variant="subtitle1">{group.time}</Typography>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {group.level}
+                                    </Typography>
+                                </Box>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => handleRegister(group)}
+                                >
+                                    Записатись
+                                </Button>
+                            </CardContent>
+                        </Card>
                     ))}
-                    {/* Alert при виборі */}
-                    {selectedGroup && (
-                        <Alert severity="success" sx={{ mt: 3 }}>
-                            ✅ Ви зареєструвались: {selectedGroup.level} ({selectedGroup.time})
-                        </Alert>
-                    )}
-                </>
+                </TabPanel>
+            ))}
+            {/* Alert при виборі */}
+            {selectedGroup && (
+                <Alert severity="success" sx={{ mt: 3 }}>
+                    ✅ Ви зареєструвались: {selectedGroup.level} ({selectedGroup.time})
+                </Alert>
             )}
         </Box>
     );
