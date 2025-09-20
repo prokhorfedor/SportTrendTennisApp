@@ -33,6 +33,7 @@ public class UserService : IUserService
             await _context.SaveChangesAsync();
             return new CreateUserResponse()
             {
+                UserId = user.UserId,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
@@ -44,5 +45,10 @@ public class UserService : IUserService
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    public async Task GetAllUsers()
+    {
+
     }
 }

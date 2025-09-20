@@ -1,13 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Contracts.Enums;
 
 namespace Database.Entities;
 
 public class User
 {
-    [Key]
-    public Guid UserId { get; set; } = Guid.NewGuid();
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid UserId { get; set; }
+    [Column(TypeName = "NVARCHAR(50)")]
     public string FirstName { get; set; }
+    [Column(TypeName = "NVARCHAR(50)")]
     public string LastName { get; set; }
     public string Email { get; set; }
     public string Phone { get; set; }

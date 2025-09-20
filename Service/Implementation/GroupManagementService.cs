@@ -58,14 +58,15 @@ public class GroupManagementService : IGroupManagementService
         {
             var groupInstance = await _context.GroupInstances
                 .Include(g => g.Team)
-                .Where(g => g.GroupId == request.GroupId && g.GroupInstanceDate == request.GroupInstanceDate)
+                .Where(g => g.GroupId == request.GroupId && g.GroupInstanceDate == request.GroupInstanceDate.Date)
                 .SingleOrDefaultAsync();
 
             if (groupInstance == null)
             {
                 groupInstance = new GroupInstance()
                 {
-                    GroupId = request.GroupId
+                    GroupId = request.GroupId,
+                    GroupInstanceDate = request.GroupInstanceDate.Date
                 };
                 await _context.GroupInstances.AddAsync(groupInstance);
 
@@ -94,7 +95,7 @@ public class GroupManagementService : IGroupManagementService
             var groupInstance = await _context.GroupInstances
                 .Include(g => g.Group).ThenInclude(g => g.GroupSchedule)
                 .Include(g => g.Team).ThenInclude(t => t.Member)
-                .Where(g => g.GroupId == request.GroupId && g.GroupInstanceDate == request.GroupInstanceDate)
+                .Where(g => g.GroupId == request.GroupId && g.GroupInstanceDate == request.GroupInstanceDate.Date)
                 .SingleOrDefaultAsync();
             return GetGroupInstanceResponse(groupInstance);
         }

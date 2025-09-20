@@ -1,3 +1,4 @@
+using Contracts.DTOs;
 using Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,12 @@ public class GroupManagementContext : DbContext
             .HasForeignKey<TeamMember>(t => t.MemberId);
         modelBuilder.Entity<Schedule>().Property(x => x.DayOfWeek).HasConversion<int>();
         modelBuilder.Entity<TeamMember>().Property(x => x.MemberStatus).HasConversion<int>();
+
+        modelBuilder.Entity<User>().Property(x => x.UserId).HasDefaultValueSql("NEWID()");
+        modelBuilder.Entity<Schedule>().Property(x => x.ScheduleId).HasDefaultValueSql("NEWID()");
+        modelBuilder.Entity<Group>().Property(x => x.GroupId).HasDefaultValueSql("NEWID()");
+        modelBuilder.Entity<GroupInstance>().Property(x => x.GroupInstanceId).HasDefaultValueSql("NEWID()");
+        modelBuilder.Entity<TeamMember>().Property(x => x.TeamMemberId).HasDefaultValueSql("NEWID()");
         base.OnModelCreating(modelBuilder);
     }
 }
