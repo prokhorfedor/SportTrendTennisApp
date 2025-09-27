@@ -28,7 +28,7 @@ public class GroupManagementController : Controller
     {
         try
         {
-            return await _groupManagementService.GetGroupsWithScheduleAsync();
+            return Ok(await _groupManagementService.GetGroupsWithScheduleAsync());
         }
         catch (Exception e)
         {
@@ -39,11 +39,12 @@ public class GroupManagementController : Controller
 
     [HttpPost]
     [Route("[action]")]
-    public async Task<ActionResult<Guid>> RegisterIntoGroup([FromBody] RegisterToGroupRequest request)
+    public async Task<ActionResult<RegisterToGroupResponse>> RegisterIntoGroup([FromBody] RegisterToGroupRequest request)
     {
         try
         {
-            return await _groupManagementService.RegisterIntoGroupAsync(request);
+            var userId = GetUserIdFromToken();
+            return Ok(await _groupManagementService.RegisterIntoGroupAsync(request,userId));
         }
         catch (Exception e)
         {
@@ -58,7 +59,7 @@ public class GroupManagementController : Controller
     {
         try
         {
-            return await _groupManagementService.GetGroupInstanceAsync(request);
+            return Ok(await _groupManagementService.GetGroupInstanceAsync(request));
         }
         catch (Exception e)
         {
@@ -73,7 +74,7 @@ public class GroupManagementController : Controller
     {
         try
         {
-            return await _groupManagementService.GetGroupInstanceByIdAsync(groupInstanceId);
+            return Ok(await _groupManagementService.GetGroupInstanceByIdAsync(groupInstanceId));
         }
         catch (Exception e)
         {
@@ -89,7 +90,23 @@ public class GroupManagementController : Controller
         try
         {
             var userId = GetUserIdFromToken();
-            return await _groupManagementService.CreateGroupAsync(request, userId);
+            return Ok(await _groupManagementService.CreateGroupAsync(request, userId));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    [HttpPost]
+    [Route("[action]")]
+    public async Task<ActionResult<GroupInstanceResponse>> UpdateGroupStatus([FromBody] UpdateGroupStatusRequest request)
+    {
+        try
+        {
+            var response = await _groupManagementService.UpdateGroupInstanceStatusAsync(request);
+            return Ok(response);
         }
         catch (Exception e)
         {

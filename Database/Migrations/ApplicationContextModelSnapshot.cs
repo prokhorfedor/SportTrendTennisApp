@@ -35,10 +35,16 @@ namespace Database.Migrations
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("GroupDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("GroupName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR(50)");
+
+                    b.Property<int>("Schedule")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("Time")
                         .HasColumnType("time");
@@ -55,11 +61,17 @@ namespace Database.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<Guid?>("GroupId")
+                    b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("GroupInstanceDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("GroupStatus")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.HasKey("GroupInstanceId");
 
@@ -144,9 +156,7 @@ namespace Database.Migrations
 
                     b.HasIndex("GroupInstanceId");
 
-                    b.HasIndex("MemberId")
-                        .IsUnique()
-                        .HasFilter("[MemberId] IS NOT NULL");
+                    b.HasIndex("MemberId");
 
                     b.ToTable("TeamMembers");
                 });
@@ -218,7 +228,9 @@ namespace Database.Migrations
                 {
                     b.HasOne("Database.Entities.Group", "Group")
                         .WithMany()
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Group");
                 });
@@ -237,8 +249,8 @@ namespace Database.Migrations
                         .HasForeignKey("GroupInstanceId");
 
                     b.HasOne("Database.Entities.User", "Member")
-                        .WithOne()
-                        .HasForeignKey("Database.Entities.TeamMember", "MemberId");
+                        .WithMany()
+                        .HasForeignKey("MemberId");
 
                     b.Navigation("Member");
                 });

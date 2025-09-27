@@ -273,7 +273,7 @@ public class UserService : IUserService
                 JwtId = token.Id,
                 UserId = user.UserId,
                 CreatedDate = DateTime.UtcNow,
-                ExpiryDate = DateTime.UtcNow.AddMonths(6)
+                ExpiryDate = DateTime.UtcNow.AddMinutes(10)
             };
             await _context.RefreshTokens.AddAsync(refreshToken);
             await _context.SaveChangesAsync();
