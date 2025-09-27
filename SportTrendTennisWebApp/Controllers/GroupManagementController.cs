@@ -1,11 +1,14 @@
+using System.Security.Claims;
 using Contracts.Requests;
 using Contracts.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Interfaces;
 
 namespace SportTrendTennisWebApp.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class GroupManagementController : Controller
 {
@@ -76,6 +79,45 @@ public class GroupManagementController : Controller
         {
             Console.WriteLine(e);
             throw;
+        }
+    }
+
+    [HttpPost]
+    [Route("[action]")]
+    public async Task<ActionResult<Guid>> AddGroup([FromBody] CreateGroupRequest request)
+    {
+        try
+        {
+            var userId = GetUserIdFromToken();
+            return await _groupManagementService.CreateGroupAsync(request, userId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    protected Guid GetUserIdFromToken()
+    {
+        Guid UserId = Guid.Empty;
+        try
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                if (identity != null)
+                {
+                    IEnumerable<Claim> claims = identity.Claims;
+                    string strUserId = identity.FindFirst("UserId").Value;
+                    Guid.TryParse(strUserId, out UserId);
+                }
+            }
+            return UserId;
+        }
+        catch
+        {
+            return UserId;
         }
     }
 }

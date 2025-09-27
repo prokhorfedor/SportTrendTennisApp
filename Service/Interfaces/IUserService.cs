@@ -7,4 +7,5 @@ public interface IUserService
 {
     Task<CreateUserResponse> CreateUserAsync(CreateUserRequest request);
     Task<LoginResponse> LoginAsync(LoginRequest request);
+    Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request);
 }

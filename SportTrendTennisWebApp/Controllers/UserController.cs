@@ -49,4 +49,21 @@ public class UserController : ControllerBase
             throw;
         }
     }
+
+    [HttpPost]
+    [Route("[action]")]
+    public async Task<ActionResult<RefreshTokenResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
+    {
+        try
+        {
+            var result = await _userService.RefreshTokenAsync(request);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+    }
 }

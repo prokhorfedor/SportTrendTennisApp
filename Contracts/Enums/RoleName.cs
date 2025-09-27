@@ -1,6 +1,6 @@
 namespace Contracts.Enums;
 
-public enum UserType
+public enum RoleName
 {
     Admin,
     Coach,

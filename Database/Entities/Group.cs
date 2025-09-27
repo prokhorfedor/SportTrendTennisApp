@@ -12,6 +12,7 @@ public class Group
     [StringLength(50)]
     [Column(TypeName = "NVARCHAR(50)")]
     public string GroupName { get; set; }
-    public Schedule? GroupSchedule { get; set; }
+    public DayOfWeek DayOfWeek { get; set; }
+    public TimeOnly Time { get; set; }
     public Guid CoachId { get; set; }
 }

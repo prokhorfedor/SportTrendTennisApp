@@ -19,5 +19,7 @@ public class User
     public byte[] PasswordSalt { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime CreatedDate { get; set; }
-    public UserType UserType { get; set; }
+    public DateTime? ModifiedDate { get; set; }
+    public RoleName RoleName { get; set; }
+    public List<Role>? Roles { get; set; }
 }

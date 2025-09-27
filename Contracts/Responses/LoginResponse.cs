@@ -1,3 +1,4 @@
+using Contracts.Authentication;
 using Contracts.Enums;
 
 namespace Contracts.Responses;
@@ -5,4 +6,5 @@ namespace Contracts.Responses;
 public class LoginResponse
 {
     public LoginResult Result { get; set; }
+    public TokenModel  Token { get; set; }
 }

@@ -9,4 +9,5 @@ public interface IGroupManagementService
     Task<Guid> RegisterIntoGroupAsync(RegisterToGroupRequest request);
     Task<GroupInstanceResponse> GetGroupInstanceAsync(GetGroupInstanceRequest request);
     Task<GroupInstanceResponse> GetGroupInstanceByIdAsync(Guid groupInstanceId);
+    Task<Guid> CreateGroupAsync(CreateGroupRequest request, Guid userId);
 }

@@ -4,16 +4,19 @@ using Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace Database.Migrations
 {
-    [DbContext(typeof(GroupManagementContext))]
-    partial class GroupManagementContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ApplicationContext))]
+    [Migration("20250926141507_AddRoleIndex")]
+    partial class AddRoleIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,17 +35,18 @@ namespace Database.Migrations
                     b.Property<Guid>("CoachId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
                     b.Property<string>("GroupName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR(50)");
 
-                    b.Property<Guid?>("GroupScheduleScheduleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<TimeOnly>("Time")
+                        .HasColumnType("time");
 
                     b.HasKey("GroupId");
-
-                    b.HasIndex("GroupScheduleScheduleId");
 
                     b.ToTable("Groups");
                 });
@@ -67,22 +71,60 @@ namespace Database.Migrations
                     b.ToTable("GroupInstances");
                 });
 
-            modelBuilder.Entity("Database.Entities.Schedule", b =>
+            modelBuilder.Entity("Database.Entities.RefreshToken", b =>
                 {
-                    b.Property<Guid>("ScheduleId")
+                    b.Property<Guid>("RefreshTokenId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("DayOfWeek")
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Used")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("RefreshTokenId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Database.Entities.Role", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RoleName")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly>("Time")
-                        .HasColumnType("time");
+                    b.HasKey("RoleId");
 
-                    b.HasKey("ScheduleId");
+                    b.HasIndex("RoleName")
+                        .IsUnique();
 
-                    b.ToTable("Schedules");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Database.Entities.TeamMember", b =>
@@ -137,6 +179,9 @@ namespace Database.Migrations
                         .IsRequired()
                         .HasColumnType("NVARCHAR(50)");
 
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("VARBINARY(250)");
@@ -149,7 +194,7 @@ namespace Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserType")
+                    b.Property<int>("RoleName")
                         .HasColumnType("int");
 
                     b.HasKey("UserId");
@@ -157,13 +202,19 @@ namespace Database.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Database.Entities.Group", b =>
+            modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.HasOne("Database.Entities.Schedule", "GroupSchedule")
-                        .WithMany()
-                        .HasForeignKey("GroupScheduleScheduleId");
+                    b.Property<Guid>("RolesRoleId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Navigation("GroupSchedule");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("RolesRoleId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RoleUser");
                 });
 
             modelBuilder.Entity("Database.Entities.GroupInstance", b =>
@@ -173,6 +224,13 @@ namespace Database.Migrations
                         .HasForeignKey("GroupId");
 
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("Database.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("Database.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Database.Entities.TeamMember", b =>
@@ -186,6 +244,21 @@ namespace Database.Migrations
                         .HasForeignKey("Database.Entities.TeamMember", "MemberId");
 
                     b.Navigation("Member");
+                });
+
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.HasOne("Database.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Database.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Database.Entities.GroupInstance", b =>

@@ -11,9 +11,9 @@ namespace Service.Implementation;
 
 public class GroupManagementService : IGroupManagementService
 {
-    private readonly GroupManagementContext _context;
+    private readonly IGroupManagementContext _context;
 
-    public GroupManagementService(GroupManagementContext context)
+    public GroupManagementService(IGroupManagementContext context)
     {
         _context = context;
     }
@@ -26,14 +26,14 @@ public class GroupManagementService : IGroupManagementService
     {
         try
         {
-            var schedules = await _context.Groups.AsNoTracking().Include(g => g.GroupSchedule).ToListAsync();
+            var schedules = await _context.Groups.AsNoTracking().ToListAsync();
             var groupedSchedule = new GroupScheduleResponse()
             {
-                GroupScheduleItem = schedules.GroupBy(s => s.GroupSchedule.DayOfWeek, s =>
+                GroupScheduleItem = schedules.GroupBy(s => s.DayOfWeek, s =>
                     new GroupTimeDto()
                     {
                         GroupId = s.GroupId,
-                        Time = s.GroupSchedule.Time,
+                        Time = s.Time,
                         GroupName = s.GroupName
                     }).ToDictionary(s => s.Key, s => s.ToList())
             };
@@ -93,8 +93,8 @@ public class GroupManagementService : IGroupManagementService
         try
         {
             var groupInstance = await _context.GroupInstances
-                .Include(g => g.Group).ThenInclude(g => g.GroupSchedule)
-                .Include(g => g.Team).ThenInclude(t => t.Member)
+                .Include(g => g.Group)
+                .Include(g => g.Team)!.ThenInclude(t => t.Member)
                 .Where(g => g.GroupId == request.GroupId && g.GroupInstanceDate == request.GroupInstanceDate.Date)
                 .SingleOrDefaultAsync();
             return GetGroupInstanceResponse(groupInstance);
@@ -111,11 +111,33 @@ public class GroupManagementService : IGroupManagementService
         try
         {
             var groupInstance = await _context.GroupInstances
-                .Include(g => g.Group).ThenInclude(g => g.GroupSchedule)
-                .Include(g => g.Team).ThenInclude(t => t.Member)
+                .Include(g => g.Group)
+                .Include(g => g.Team)!.ThenInclude(t => t.Member)
                 .Where(g => g.GroupInstanceId == groupInstanceId)
                 .SingleOrDefaultAsync();
             return GetGroupInstanceResponse(groupInstance);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<Guid> CreateGroupAsync(CreateGroupRequest request, Guid userId)
+    {
+        try
+        {
+            var group = new Group()
+            {
+                CoachId = userId,
+                GroupName = request.GroupName,
+                DayOfWeek = request.DayOfWeek,
+                Time = request.Time,
+            };
+            await _context.Groups.AddAsync(group);
+            await _context.SaveChangesAsync();
+            return group.GroupId;
         }
         catch (Exception e)
         {
@@ -137,7 +159,7 @@ public class GroupManagementService : IGroupManagementService
             {
                 GroupId = groupInstance.GroupId.GetValueOrDefault(),
                 GroupName = groupInstance.Group.GroupName,
-                Time = groupInstance.Group.GroupSchedule.Time,
+                Time = groupInstance.Group.Time,
             },
             Members = groupInstance.Team.Select(s => new TeamMemberDto()
             {
