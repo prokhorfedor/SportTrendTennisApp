@@ -123,7 +123,7 @@ public class UserService : IUserService
             var authResponse = await GetRefreshTokenAsync(token.Token, token.RefreshToken);
             if (!authResponse.Success)
             {
-                response.IsSuccess = false;
+                response.Success = false;
                 response.Message = string.Join(",", authResponse.Errors);
                 return response;
             }
@@ -136,7 +136,7 @@ public class UserService : IUserService
         }
         catch (Exception ex)
         {
-            response.IsSuccess = false;
+            response.Success = false;
             response.Message = "Something went wrong!";
             return response;
         }

@@ -31,7 +31,8 @@ public class GroupManagementService : IGroupManagementService
             var startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek).Date;
             var groupIds = groups.Select(s => s.GroupId).ToList();
             var groupStatuses = (await _context.GroupInstances.AsNoTracking()
-                    .Where(g => groupIds.Contains(g.GroupId) && !g.IsDeleted && g.GroupInstanceDate >= startOfWeek && g.GroupInstanceDate <= startOfWeek.AddDays(6))
+                    .Where(g => groupIds.Contains(g.GroupId) && !g.IsDeleted && g.GroupInstanceDate >= startOfWeek &&
+                                g.GroupInstanceDate <= startOfWeek.AddDays(6))
                     .Select(g => new { g.GroupId, g.GroupStatus }).ToListAsync())
                 .ToDictionary(g => g.GroupId, g => g.GroupStatus);
 
@@ -47,7 +48,7 @@ public class GroupManagementService : IGroupManagementService
                     }).ToDictionary(s => s.Key, s => s.ToList())
             };
 
-        return groupedSchedule;
+            return groupedSchedule;
         }
         catch (Exception e)
         {
@@ -69,22 +70,23 @@ public class GroupManagementService : IGroupManagementService
             {
                 return new RegisterToGroupResponse()
                 {
-                    IsSuccess = false,
-                    ErrorMessage = "Group does not exist",
+                    Success = false,
+                    Message = "Group does not exist",
                 };
             }
 
             var groupInstance = await _context.GroupInstances
                 .Include(g => g.Team)
-                .Where(g => !g.IsDeleted && g.GroupId == request.GroupId && g.GroupInstanceDate == request.GroupInstanceDate.Date)
+                .Where(g => !g.IsDeleted && g.GroupId == request.GroupId &&
+                            g.GroupInstanceDate == request.GroupInstanceDate.Date)
                 .SingleOrDefaultAsync();
 
             if (groupInstance != null && groupInstance.GroupStatus != GroupStatus.Pending)
             {
                 return new RegisterToGroupResponse()
                 {
-                    IsSuccess = false,
-                    ErrorMessage = "Registration has already been closed",
+                    Success = false,
+                    Message = "Registration has already been closed",
                     GroupInstanceId = groupInstance.GroupInstanceId,
                 };
             }
@@ -97,8 +99,8 @@ public class GroupManagementService : IGroupManagementService
                     GroupInstanceDate = request.GroupInstanceDate.Date
                 };
                 await _context.GroupInstances.AddAsync(groupInstance);
-
             }
+
             var teamMember = new TeamMember()
             {
                 MemberId = userId,
@@ -109,7 +111,7 @@ public class GroupManagementService : IGroupManagementService
             await _context.SaveChangesAsync();
             return new RegisterToGroupResponse()
             {
-                IsSuccess = true,
+                Success = true,
                 GroupInstanceId = groupInstance.GroupInstanceId
             };
         }
@@ -127,7 +129,8 @@ public class GroupManagementService : IGroupManagementService
             var groupInstance = await _context.GroupInstances.AsNoTracking()
                 .Include(g => g.Group)
                 .Include(g => g.Team)!.ThenInclude(t => t.Member)
-                .Where(g => !g.IsDeleted && g.GroupId == request.GroupId && g.GroupInstanceDate == request.GroupInstanceDate.Date)
+                .Where(g => !g.IsDeleted && g.GroupId == request.GroupId &&
+                            g.GroupInstanceDate == request.GroupInstanceDate.Date)
                 .SingleOrDefaultAsync();
             return GetGroupInstanceResponse(groupInstance);
         }
@@ -271,8 +274,35 @@ public class GroupManagementService : IGroupManagementService
                 await _context.TeamMembers.AddRangeAsync(teamMembers);
                 updatedGroupInstance.Team = teamMembers;
             }
+
             await _context.SaveChangesAsync();
             return await this.GetGroupInstanceByIdAsync(updatedGroupInstance.GroupInstanceId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<RemoveTeamMemberResponse> RemoveTeamMember(Guid groupInstanceId)
+    {
+        try
+        {
+            var member = await _context.TeamMembers.Where(t=>t.GroupInstanceId == groupInstanceId).SingleOrDefaultAsync();
+            if (member == null)
+                return new RemoveTeamMemberResponse()
+                {
+                    Success = false,
+                    Message = "Member Not Found",
+                };
+
+            member.MemberStatus = MemberStatus.Declined;
+            await _context.SaveChangesAsync();
+            return new RemoveTeamMemberResponse()
+            {
+                Success = true,
+            };
         }
         catch (Exception e)
         {

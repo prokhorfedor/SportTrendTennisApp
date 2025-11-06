@@ -1,8 +1,6 @@
 namespace Contracts.Responses;
 
-public class RegisterToGroupResponse
+public class RegisterToGroupResponse : ResponseBase
 {
-    public bool IsSuccess { get; set; }
-    public string ErrorMessage { get; set; }
     public Guid GroupInstanceId { get; set; }
 }

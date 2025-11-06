@@ -1,6 +1,6 @@
 namespace Contracts.Responses;
 
-public class CreateUserResponse
+public class CreateUserResponse : ResponseBase
 {
     public Guid UserId { get; set; }
     public string FirstName { get; set; }

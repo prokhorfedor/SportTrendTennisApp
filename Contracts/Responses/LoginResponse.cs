@@ -3,7 +3,7 @@ using Contracts.Enums;
 
 namespace Contracts.Responses;
 
-public class LoginResponse
+public class LoginResponse : ResponseBase
 {
     public LoginResult Result { get; set; }
     public TokenModel  Token { get; set; }
