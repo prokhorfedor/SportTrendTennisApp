@@ -6,6 +6,7 @@ export const API_TIMEOUT: number = 10000;
 
 export const API_URLS = {
     LOGIN: `${API_BASE_URL}/login`,
+    SIGNUP: `${API_BASE_URL}/createuser`,
     REGISTER: `${API_BASE_URL}/register`,
     // Add other endpoints as needed
 };
