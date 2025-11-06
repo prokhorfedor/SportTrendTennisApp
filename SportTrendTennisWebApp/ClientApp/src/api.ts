@@ -1,7 +1,5 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 export async function apiRequest<TResponse>(path: string, options: RequestInit = {}): Promise<TResponse> {
-    const response = await fetch(`${API_BASE_URL}${path}`, {
+    const response = await fetch(path, {
         ...options,
         headers: {
             'Content-Type': 'application/json',

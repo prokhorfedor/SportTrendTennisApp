@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Card, CardContent } from "@mui/material";
 import { apiRequest } from "../api";
 import { useNavigate } from "react-router-dom";
+import { hashPasswordSHA256 } from "../helpers/userService";
 
 export default function Signup({ onSignup }) {
     const [form, setForm] = useState({
@@ -18,13 +19,6 @@ export default function Signup({ onSignup }) {
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-
-    async function hashPasswordSHA256(password) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();

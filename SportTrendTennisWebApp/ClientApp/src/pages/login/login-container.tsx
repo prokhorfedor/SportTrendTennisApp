@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLogin } from "../../api/useLogin";
 import LoginComponent from "./login-component";
 import { LoginResult } from "../../config/consts";
+import { hashPasswordSHA256 } from "../../helpers/userService";
 
 function LoginContainer() {
     const [error, setError] = useState<string | null>(null);
@@ -18,12 +19,6 @@ function LoginContainer() {
         navigate("/signup");
     };
 
-    async function hashPasswordSHA256(password: string): Promise<string> {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget as HTMLFormElement);
@@ -47,7 +42,8 @@ function LoginContainer() {
             if (result.result === LoginResult.NotFound)
                 setShowSignupPrompt(true);
 
-            if (onLogin) onLogin({ identifier });
+            if (onLogin)
+                onLogin({ identifier });
         } catch (err: any) {
 
             setError("Login failed: " + err.message);
